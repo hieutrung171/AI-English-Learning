@@ -50,16 +50,41 @@ npm install
 npm run dev
 ```
 
-## API
+## MVP Phase 1
 
-`POST /api/v1/chat`
+- Adaptive CEFR conversation tutor with topic-aware feedback
+- Smart travel flashcards prepared for spaced-repetition scheduling
+- Personalised multiple-choice grammar exercises with explanations
+- Responsive learning dashboard with skill progress, streaks and daily goals
+- Light/dark theme and mobile navigation
+
+## API endpoints
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/health` | Service health check |
+| `POST` | `/api/v1/chat` | Conversational tutor |
+| `POST` | `/api/v1/flashcards/generate` | Generate a vocabulary deck |
+| `POST` | `/api/v1/exercises/generate` | Generate grammar exercises |
+| `POST` | `/api/v1/writing/check` | Writing and grammar feedback |
+
+Example conversation request:
 
 ```json
 {
   "message": "Help me practice ordering coffee",
-  "level": "A2"
+  "level": "A2",
+  "topic": "Restaurant"
 }
 ```
 
-The starter returns a deterministic tutor response. Replace the implementation in
-`backend/app/agent/service.py` when connecting LangChain or another model provider.
+The current agent includes deterministic development engines so the project works
+without an API key. The service layer in `backend/app/agent/service.py` is the
+integration point for OpenAI, Gemini, Claude or LangChain.
+
+## Delivery roadmap
+
+- **Phase 1:** Conversation tutor, flashcards, grammar exercises — implemented
+- **Phase 2:** Writing grader, speech-to-text pronunciation coach
+- **Phase 3:** IELTS/TOEIC practice, gamification and leaderboard
+- **Phase 4:** PWA, offline learning and learner community
