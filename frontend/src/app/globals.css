@@ -307,7 +307,7 @@ button { color: inherit; }
   position: relative;
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   align-items: center;
   padding: 42px clamp(42px, 5vw, 82px);
   overflow: hidden;

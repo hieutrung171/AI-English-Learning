@@ -28,12 +28,6 @@ const copy = {
     formSubtitle: "Đăng nhập để tiếp tục lộ trình học tập cá nhân hóa.",
     formSubtitleRegister: "Tạo tài khoản và nhận lộ trình phù hợp với trình độ của bạn.",
     secure: "Thông tin của bạn được bảo vệ an toàn",
-    previewTitle: "Buổi học hôm nay",
-    previewTopic: "Hội thoại tại sân bay",
-    previewMessage: "Could you tell me where gate 24 is?",
-    previewFeedback: "Tuyệt vời! Câu hỏi tự nhiên và lịch sự.",
-    streakLabel: "chuỗi ngày",
-    progressLabel: "mục tiêu tuần",
   },
   en: {
     badge: "YOUR PERSONAL ENGLISH TUTOR",
@@ -56,12 +50,6 @@ const copy = {
     formSubtitle: "Sign in to continue your personalised learning path.",
     formSubtitleRegister: "Create an account and get a learning path matched to your level.",
     secure: "Your information is safely protected",
-    previewTitle: "Today's lesson",
-    previewTopic: "Conversation at the airport",
-    previewMessage: "Could you tell me where gate 24 is?",
-    previewFeedback: "Excellent! That question sounds natural and polite.",
-    streakLabel: "day streak",
-    progressLabel: "weekly goal",
   },
 };
 
@@ -123,22 +111,6 @@ export function AuthScreen({
           </div>
         </div>
 
-        <div className="learning-preview" aria-hidden="true">
-          <div className="preview-top">
-            <div><span>{t.previewTitle}</span><strong>{t.previewTopic}</strong></div>
-            <em>B1</em>
-          </div>
-          <div className="preview-chat">
-            <span className="preview-avatar">AI</span>
-            <p>{t.previewMessage}</p>
-          </div>
-          <div className="preview-feedback"><span>✓</span><p>{t.previewFeedback}</p></div>
-          <div className="preview-metrics">
-            <div><strong>12</strong><span>{t.streakLabel}</span></div>
-            <div><strong>78%</strong><span>{t.progressLabel}</span></div>
-            <div className="mini-progress"><span /></div>
-          </div>
-        </div>
       </section>
 
       <section className="auth-form-side">
