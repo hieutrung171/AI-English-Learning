@@ -14,10 +14,16 @@ from sqlalchemy import select
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
-    if settings.admin_email and settings.admin_password:
+    if settings.admin_email and len(settings.admin_password) >= 8:
         with SessionLocal() as db:
             email = settings.admin_email.strip().lower()
-            if not db.scalar(select(User).where(User.email == email)):
+            admin = db.scalar(select(User).where(User.email == email))
+            if admin:
+                admin.password_hash = hash_password(settings.admin_password)
+                admin.role = UserRole.admin.value
+                admin.is_active = True
+                db.add(admin)
+            else:
                 db.add(
                     User(
                         email=email,
@@ -27,7 +33,7 @@ async def lifespan(_: FastAPI):
                         preferred_language="vi",
                     )
                 )
-                db.commit()
+            db.commit()
     yield
 
 app = FastAPI(

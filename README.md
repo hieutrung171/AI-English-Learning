@@ -107,7 +107,9 @@ Then rebuild the backend:
 docker compose up -d --build
 ```
 
-The administrator account is created only when both admin values are present.
+The administrator account is created only when both admin values are present and
+the password contains at least 8 characters. Restarting the backend updates the
+configured administrator password and keeps the account assigned to the admin role.
 Authorization is enforced by FastAPI, so learner accounts cannot call admin APIs.
 
 ## Delivery roadmap
