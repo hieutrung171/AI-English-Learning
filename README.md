@@ -52,6 +52,9 @@ npm run dev
 
 ## MVP Phase 1
 
+- Account registration and secure cookie-based sign-in
+- Server-side role-based access control (`learner` and `admin`)
+- Vietnamese/English interface with saved language preference
 - Adaptive CEFR conversation tutor with topic-aware feedback
 - Smart travel flashcards prepared for spaced-repetition scheduling
 - Personalised multiple-choice grammar exercises with explanations
@@ -67,6 +70,11 @@ npm run dev
 | `POST` | `/api/v1/flashcards/generate` | Generate a vocabulary deck |
 | `POST` | `/api/v1/exercises/generate` | Generate grammar exercises |
 | `POST` | `/api/v1/writing/check` | Writing and grammar feedback |
+| `POST` | `/api/v1/auth/register` | Create a learner account |
+| `POST` | `/api/v1/auth/login` | Sign in and create a secure session |
+| `POST` | `/api/v1/auth/logout` | End the current session |
+| `GET` | `/api/v1/auth/me` | Read the signed-in profile |
+| `GET` | `/api/v1/admin/users` | List users (admin only) |
 
 Example conversation request:
 
@@ -81,6 +89,26 @@ Example conversation request:
 The current agent includes deterministic development engines so the project works
 without an API key. The service layer in `backend/app/agent/service.py` is the
 integration point for OpenAI, Gemini, Claude or LangChain.
+
+## Roles and administrator account
+
+Every public registration receives the `learner` role. To create the initial
+administrator, set these values in `.env` before starting Docker:
+
+```env
+JWT_SECRET=use-a-long-random-secret-here
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=choose-a-strong-password
+```
+
+Then rebuild the backend:
+
+```bash
+docker compose up -d --build
+```
+
+The administrator account is created only when both admin values are present.
+Authorization is enforced by FastAPI, so learner accounts cannot call admin APIs.
 
 ## Delivery roadmap
 

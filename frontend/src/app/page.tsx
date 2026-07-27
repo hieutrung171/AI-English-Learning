@@ -1,5 +1,5 @@
-import { LearningDashboard } from "@/components/LearningDashboard";
+import { FluentAIApp } from "@/components/FluentAIApp";
 
 export default function Home() {
-  return <LearningDashboard />;
+  return <FluentAIApp />;
 }

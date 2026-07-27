@@ -3,22 +3,18 @@
 import { FormEvent, useMemo, useState } from "react";
 
 import {
+  AppUser,
   ExerciseQuestion,
   Flashcard,
   generateExercise,
   generateFlashcards,
+  listUsers,
   sendChatMessage,
 } from "@/services/api";
 
-type View = "home" | "chat" | "flashcards" | "grammar";
+type Language = "vi" | "en";
+type View = "home" | "chat" | "flashcards" | "grammar" | "admin";
 type Message = { role: "tutor" | "learner"; text: string; note?: string };
-
-const navigation: Array<{ id: View; icon: string; label: string }> = [
-  { id: "home", icon: "HM", label: "Overview" },
-  { id: "chat", icon: "CH", label: "AI conversation" },
-  { id: "flashcards", icon: "FC", label: "Flashcards" },
-  { id: "grammar", icon: "GR", label: "Grammar practice" },
-];
 
 const skills = [
   { label: "Speaking", value: 68, tone: "blue" },
@@ -27,7 +23,46 @@ const skills = [
   { label: "Writing", value: 62, tone: "violet" },
 ];
 
-export function LearningDashboard() {
+const translations = {
+  vi: {
+    learn: "HỌC TẬP", overview: "Tổng quan", chat: "Hội thoại AI", flashcards: "Flashcard",
+    grammar: "Luyện ngữ pháp", admin: "Quản trị người dùng", coming: "SẮP RA MẮT",
+    pronunciation: "Phát âm", writing: "Chấm bài viết", exams: "Luyện thi", learner: "Học viên",
+    online: "Gia sư AI đang trực tuyến", dailyPlan: "THỨ HAI · KẾ HOẠCH HÔM NAY",
+    morning: "Chào buổi sáng", progress: "Mỗi bước nhỏ đều tạo nên tiến bộ. Bạn còn 18 phút để hoàn thành mục tiêu hôm nay.",
+    dailyGoal: "Mục tiêu ngày", totalXp: "Tổng XP", streak: "Chuỗi ngày", accuracy: "Độ chính xác",
+    currentLevel: "Trình độ hiện tại", recommended: "ĐỀ XUẤT", continueLearning: "Tiếp tục học",
+    quick: "Luyện tập nhanh", quickSub: "Hoạt động AI điều chỉnh theo trình độ của bạn",
+    startChat: "Bắt đầu hội thoại", reviewCards: "Ôn flashcard", grammarChallenge: "Thử thách ngữ pháp",
+    logout: "Đăng xuất", role: "Vai trò", users: "Người dùng", account: "Tài khoản",
+    adminTitle: "Quản lý người dùng", adminSubtitle: "Khu vực này chỉ dành cho tài khoản quản trị.",
+  },
+  en: {
+    learn: "LEARN", overview: "Overview", chat: "AI conversation", flashcards: "Flashcards",
+    grammar: "Grammar practice", admin: "User administration", coming: "COMING NEXT",
+    pronunciation: "Pronunciation", writing: "Writing grader", exams: "Exam prep", learner: "Learner",
+    online: "AI tutor online", dailyPlan: "MONDAY · YOUR DAILY PLAN", morning: "Good morning",
+    progress: "Small steps, real progress. You are 18 minutes away from today's goal.",
+    dailyGoal: "Daily goal", totalXp: "Total XP", streak: "Current streak", accuracy: "Average accuracy",
+    currentLevel: "Current level", recommended: "RECOMMENDED", continueLearning: "Continue learning",
+    quick: "Quick practice", quickSub: "AI-generated activities adapted to your level",
+    startChat: "Start a conversation", reviewCards: "Review flashcards", grammarChallenge: "Grammar challenge",
+    logout: "Sign out", role: "Role", users: "Users", account: "Account",
+    adminTitle: "User administration", adminSubtitle: "This area is restricted to administrator accounts.",
+  },
+};
+
+export function LearningDashboard({
+  user,
+  language,
+  onLanguageChange,
+  onLogout,
+}: {
+  user: AppUser;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
+  onLogout: () => void;
+}) {
   const [view, setView] = useState<View>("home");
   const [dark, setDark] = useState(false);
   const [level, setLevel] = useState("B1");
@@ -46,6 +81,16 @@ export function LearningDashboard() {
   const [questions, setQuestions] = useState<ExerciseQuestion[]>([]);
   const [answer, setAnswer] = useState("");
   const [checked, setChecked] = useState(false);
+  const [managedUsers, setManagedUsers] = useState<AppUser[]>([]);
+  const t = translations[language];
+  const firstName = user.full_name.split(" ")[0];
+  const navigation: Array<{ id: View; icon: string; label: string }> = [
+    { id: "home", icon: "HM", label: t.overview },
+    { id: "chat", icon: "CH", label: t.chat },
+    { id: "flashcards", icon: "FC", label: t.flashcards },
+    { id: "grammar", icon: "GR", label: t.grammar },
+    ...(user.role === "admin" ? [{ id: "admin" as View, icon: "AD", label: t.admin }] : []),
+  ];
 
   const currentCard = cards[cardIndex];
   const currentQuestion = questions[0];
@@ -102,6 +147,16 @@ export function LearningDashboard() {
     }
   }
 
+  async function openAdmin() {
+    setView("admin");
+    setLoading(true);
+    try {
+      setManagedUsers(await listUsers());
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={dark ? "app-shell dark" : "app-shell"}>
       <aside className="sidebar">
@@ -110,26 +165,26 @@ export function LearningDashboard() {
           <span>Fluent<span className="brand-accent">AI</span></span>
         </button>
         <nav className="side-nav" aria-label="Main navigation">
-          <p>LEARN</p>
+          <p>{t.learn}</p>
           {navigation.map((item) => (
             <button
               className={view === item.id ? "active" : ""}
               key={item.id}
-              onClick={() => setView(item.id)}
+              onClick={() => item.id === "admin" ? void openAdmin() : setView(item.id)}
             >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
             </button>
           ))}
-          <p>COMING NEXT</p>
-          <button disabled><span className="nav-icon">SP</span>Pronunciation</button>
-          <button disabled><span className="nav-icon">WR</span>Writing grader</button>
-          <button disabled><span className="nav-icon">EX</span>Exam prep</button>
+          <p>{t.coming}</p>
+          <button disabled><span className="nav-icon">SP</span>{t.pronunciation}</button>
+          <button disabled><span className="nav-icon">WR</span>{t.writing}</button>
+          <button disabled><span className="nav-icon">EX</span>{t.exams}</button>
         </nav>
         <div className="sidebar-profile">
-          <div className="avatar">AT</div>
-          <div><strong>Alex Tran</strong><span>{level} learner</span></div>
-          <button aria-label="Open profile menu">···</button>
+          <div className="avatar">{user.full_name.split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase()}</div>
+          <div><strong>{user.full_name}</strong><span>{level} · {user.role}</span></div>
+          <button className="profile-logout" onClick={onLogout} aria-label={t.logout}>↪</button>
         </div>
       </aside>
 
@@ -137,7 +192,7 @@ export function LearningDashboard() {
         <header className="topbar">
           <div>
             <span className="mobile-brand">FluentAI</span>
-            <span className="online"><i /> AI tutor online</span>
+            <span className="online"><i /> {t.online}</span>
           </div>
           <div className="top-actions">
             <label>
@@ -151,6 +206,10 @@ export function LearningDashboard() {
             <button className="icon-button" onClick={() => setDark((value) => !value)} aria-label="Toggle colour theme">
               {dark ? "LT" : "DK"}
             </button>
+            <div className="language-switch compact">
+              <button className={language === "vi" ? "active" : ""} onClick={() => onLanguageChange("vi")}>VI</button>
+              <button className={language === "en" ? "active" : ""} onClick={() => onLanguageChange("en")}>EN</button>
+            </div>
             <div className="streak"><span>◆</span><strong>12</strong> day streak</div>
           </div>
         </header>
@@ -159,26 +218,26 @@ export function LearningDashboard() {
           <div className="content">
             <section className="welcome">
               <div>
-                <span className="kicker">MONDAY · YOUR DAILY PLAN</span>
-                <h1>Good morning, Alex.</h1>
-                <p>Small steps, real progress. You are 18 minutes away from today&apos;s goal.</p>
+                <span className="kicker">{t.dailyPlan}</span>
+                <h1>{t.morning}, {firstName}.</h1>
+                <p>{t.progress}</p>
               </div>
               <div className="daily-ring">
                 <div><strong>12</strong><span>/ 30 min</span></div>
-                <small>Daily goal</small>
+                <small>{t.dailyGoal}</small>
               </div>
             </section>
 
             <section className="stats-grid">
-              <article><span className="stat-icon blue">XP</span><div><small>Total XP</small><strong>2,840</strong><em>+120 this week</em></div></article>
-              <article><span className="stat-icon amber">ST</span><div><small>Current streak</small><strong>12 days</strong><em>Personal best: 18</em></div></article>
-              <article><span className="stat-icon green">AC</span><div><small>Average accuracy</small><strong>{accuracy}%</strong><em>+4% this month</em></div></article>
-              <article><span className="stat-icon violet">LV</span><div><small>Current level</small><strong>{level}</strong><em>Intermediate</em></div></article>
+              <article><span className="stat-icon blue">XP</span><div><small>{t.totalXp}</small><strong>2,840</strong><em>+120 this week</em></div></article>
+              <article><span className="stat-icon amber">ST</span><div><small>{t.streak}</small><strong>12 days</strong><em>Personal best: 18</em></div></article>
+              <article><span className="stat-icon green">AC</span><div><small>{t.accuracy}</small><strong>{accuracy}%</strong><em>+4% this month</em></div></article>
+              <article><span className="stat-icon violet">LV</span><div><small>{t.currentLevel}</small><strong>{level}</strong><em>Intermediate</em></div></article>
             </section>
 
             <section className="dashboard-grid">
               <div className="panel continue-panel">
-                <div className="panel-heading"><div><span className="kicker">RECOMMENDED</span><h2>Continue learning</h2></div><button onClick={() => setView("chat")}>View all</button></div>
+                <div className="panel-heading"><div><span className="kicker">{t.recommended}</span><h2>{t.continueLearning}</h2></div><button onClick={() => setView("chat")}>View all</button></div>
                 <div className="lesson-card">
                   <div className="lesson-visual"><span>TRAVEL ENGLISH</span><strong>At the airport</strong><small>Conversation · 10 min</small></div>
                   <div className="lesson-copy">
@@ -204,11 +263,11 @@ export function LearningDashboard() {
             </section>
 
             <section className="quick-section">
-              <div className="section-title"><div><span className="kicker">PRACTISE YOUR WAY</span><h2>Quick practice</h2></div><p>AI-generated activities adapted to your {level} level</p></div>
+              <div className="section-title"><div><span className="kicker">PRACTISE YOUR WAY</span><h2>{t.quick}</h2></div><p>{t.quickSub} · {level}</p></div>
               <div className="quick-grid">
-                <button onClick={() => setView("chat")}><span className="quick-icon blue">CH</span><strong>Start a conversation</strong><small>Real-life roleplay with instant feedback</small><em>5–10 min →</em></button>
-                <button onClick={() => { setView("flashcards"); void loadCards(); }}><span className="quick-icon green">FC</span><strong>Review flashcards</strong><small>12 vocabulary cards due today</small><em>6 min →</em></button>
-                <button onClick={() => { setView("grammar"); void loadExercise(); }}><span className="quick-icon violet">GR</span><strong>Grammar challenge</strong><small>Personalised questions from weak areas</small><em>8 min →</em></button>
+                <button onClick={() => setView("chat")}><span className="quick-icon blue">CH</span><strong>{t.startChat}</strong><small>Real-life roleplay with instant feedback</small><em>5–10 min →</em></button>
+                <button onClick={() => { setView("flashcards"); void loadCards(); }}><span className="quick-icon green">FC</span><strong>{t.reviewCards}</strong><small>12 vocabulary cards due today</small><em>6 min →</em></button>
+                <button onClick={() => { setView("grammar"); void loadExercise(); }}><span className="quick-icon violet">GR</span><strong>{t.grammarChallenge}</strong><small>Personalised questions from weak areas</small><em>8 min →</em></button>
               </div>
             </section>
           </div>
@@ -284,6 +343,33 @@ export function LearningDashboard() {
                 <button className="check-button" disabled={!answer} onClick={() => setChecked(true)}>Check answer</button>
               </div>
             )}
+          </section>
+        )}
+
+        {view === "admin" && user.role === "admin" && (
+          <section className="workspace">
+            <div className="workspace-head">
+              <div><span className="kicker">ROLE-BASED ACCESS</span><h1>{t.adminTitle}</h1><p>{t.adminSubtitle}</p></div>
+              <button onClick={() => void openAdmin()}>{loading ? "..." : "Refresh"}</button>
+            </div>
+            <div className="admin-card">
+              <div className="admin-summary">
+                <div><span>{t.users}</span><strong>{managedUsers.length}</strong></div>
+                <div><span>Admin</span><strong>{managedUsers.filter((item) => item.role === "admin").length}</strong></div>
+                <div><span>{t.learner}</span><strong>{managedUsers.filter((item) => item.role === "learner").length}</strong></div>
+              </div>
+              <div className="user-table">
+                <div className="user-row table-head"><span>{t.account}</span><span>{t.role}</span><span>Language</span><span>Status</span></div>
+                {managedUsers.map((item) => (
+                  <div className="user-row" key={item.id}>
+                    <span><strong>{item.full_name}</strong><small>{item.email}</small></span>
+                    <span><em className={`role-badge ${item.role}`}>{item.role}</em></span>
+                    <span>{item.preferred_language.toUpperCase()}</span>
+                    <span>{item.is_active ? "Active" : "Disabled"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         )}
       </main>
