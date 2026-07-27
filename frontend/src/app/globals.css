@@ -513,3 +513,65 @@ button { color: inherit; }
     border-radius: 19px;
   }
 }
+
+/* Subtle motion for the authentication typography */
+.auth-logo > span:first-child {
+  animation: authLogoFloat 3.8s ease-in-out infinite;
+}
+.auth-story-copy .kicker {
+  opacity: 0;
+  animation: authFadeUp .55s ease-out .08s forwards;
+}
+.auth-story h1 {
+  opacity: 0;
+  animation: authTitleReveal .72s cubic-bezier(.2, .72, .2, 1) .16s forwards;
+}
+.auth-story-copy > p {
+  opacity: 0;
+  animation: authFadeUp .58s ease-out .32s forwards;
+}
+.auth-benefits > div {
+  opacity: 0;
+  animation: authChipIn .48s ease-out forwards;
+}
+.auth-benefits > div:nth-child(1) { animation-delay: .42s; }
+.auth-benefits > div:nth-child(2) { animation-delay: .5s; }
+.auth-benefits > div:nth-child(3) { animation-delay: .58s; }
+.auth-card {
+  opacity: 0;
+  animation: authCardIn .65s cubic-bezier(.2, .72, .2, 1) .12s forwards;
+}
+
+@keyframes authTitleReveal {
+  from { opacity: 0; transform: translateY(22px); letter-spacing: -.075em; }
+  to { opacity: 1; transform: translateY(0); letter-spacing: -.055em; }
+}
+@keyframes authFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes authChipIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(18px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes authLogoFloat {
+  0%, 100% { transform: translateY(0); box-shadow: 0 8px 20px rgba(5, 21, 49, .08); }
+  50% { transform: translateY(-4px); box-shadow: 0 13px 25px rgba(5, 21, 49, .16); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-logo > span:first-child,
+  .auth-story-copy .kicker,
+  .auth-story h1,
+  .auth-story-copy > p,
+  .auth-benefits > div,
+  .auth-card {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
