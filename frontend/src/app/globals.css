@@ -422,3 +422,94 @@ button { color: inherit; }
   .auth-heading { margin: 27px 0 23px; }
   .auth-copyright { margin-top: 18px; }
 }
+
+/* Vietnamese-friendly typography and precise auth alignment */
+.auth-logo > span:first-child {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  padding: 0;
+  color: #245fd8;
+  background: #fff;
+  border-radius: 12px 12px 12px 4px;
+  font-size: 1rem;
+  line-height: 1;
+}
+.auth-logo > span:last-child {
+  display: inline;
+  width: auto;
+  height: auto;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  border-radius: 0;
+  font-size: 1.22rem;
+  line-height: 1;
+}
+.auth-logo > span:last-child strong { color: #67e3d6; }
+.auth-story h1 {
+  max-width: 650px;
+  font-family: "Segoe UI Variable Display", "Segoe UI", Inter, Arial, sans-serif;
+  font-size: clamp(3rem, 4.2vw, 4.85rem);
+  font-weight: 760;
+  line-height: 1.04;
+  letter-spacing: -.055em;
+}
+.preview-top strong {
+  font-family: "Segoe UI Variable Display", "Segoe UI", Inter, Arial, sans-serif;
+  font-weight: 720;
+}
+.auth-form-side {
+  justify-content: center;
+  padding-top: 74px;
+  padding-bottom: 40px;
+}
+.auth-card {
+  width: min(100%, 470px);
+  padding: 28px 34px 25px;
+  background: rgba(255, 255, 255, .9);
+  border: 1px solid rgba(215, 224, 235, .95);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgba(28, 47, 78, .11);
+  backdrop-filter: blur(16px);
+}
+.auth-card .auth-heading h2 {
+  margin-top: 0;
+  font-family: "Segoe UI Variable Display", "Segoe UI", Inter, Arial, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 760;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+.auth-heading {
+  align-items: center;
+  margin: 28px 0 25px;
+}
+.auth-heading p { max-width: 315px; }
+.auth-heading-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+.auth-card label { font-size: .72rem; }
+.auth-card input { font-size: .84rem; }
+.auth-submit { font-size: .78rem; }
+.auth-copyright { margin-top: 24px; }
+
+@media (max-width: 1200px) {
+  .auth-story h1 { font-size: clamp(3rem, 4.7vw, 4.2rem); }
+  .auth-benefits { display: grid; grid-template-columns: 1fr; width: fit-content; }
+}
+
+@media (max-width: 790px) {
+  .auth-story h1 {
+    font-size: clamp(2.35rem, 10vw, 3.25rem);
+    line-height: 1.06;
+  }
+  .auth-form-side { padding-top: 0; }
+  .auth-card {
+    width: min(100%, 490px);
+    padding: 24px;
+    border-radius: 19px;
+  }
+}
