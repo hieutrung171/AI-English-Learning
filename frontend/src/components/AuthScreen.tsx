@@ -86,7 +86,14 @@ export function AuthScreen({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const t = copy[language];
+
+  function openAuth(nextMode: "login" | "register") {
+    setMode(nextMode);
+    setError("");
+    setAuthOpen(true);
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -114,7 +121,7 @@ export function AuthScreen({
     <main className="landing-auth">
       <div className="landing-offer">
         <span>{t.offer}</span>
-        <button onClick={() => setMode("register")}>{t.offerAction} <b>→</b></button>
+        <button onClick={() => openAuth("register")}>{t.offerAction} <b>→</b></button>
       </div>
 
       <header className="landing-header">
@@ -127,8 +134,8 @@ export function AuthScreen({
               <button className={language === "vi" ? "active" : ""} onClick={() => onLanguageChange("vi")}>VI</button>
               <button className={language === "en" ? "active" : ""} onClick={() => onLanguageChange("en")}>EN</button>
             </div>
-            <button className="nav-login" onClick={() => setMode("login")}>{t.login}</button>
-            <button className="nav-start" onClick={() => setMode("register")}>{t.startFree}</button>
+            <button className="nav-login" onClick={() => openAuth("login")}>{t.login}</button>
+            <button className="nav-start" onClick={() => openAuth("register")}>{t.startFree}</button>
           </div>
         </div>
       </header>
@@ -139,7 +146,7 @@ export function AuthScreen({
           <h1>{t.heroTitle}</h1>
           <p>{t.heroBody}</p>
           <div className="landing-cta">
-            <button onClick={() => setMode("register")}>{t.startFree} <span>→</span></button>
+            <button onClick={() => openAuth("register")}>{t.startFree} <span>→</span></button>
             <small><i>✓</i>{t.freeNote}</small>
           </div>
           <div className="landing-benefits">
@@ -148,10 +155,42 @@ export function AuthScreen({
           </div>
         </div>
 
-        <div className="landing-auth-panel">
+        <div className="landing-product-preview" aria-label="FluentAI learning preview">
           <div className="landing-orbit orbit-one" />
           <div className="landing-orbit orbit-two" />
-          <div className="auth-card landing-card">
+          <div className="preview-chat-card">
+            <div className="preview-chat-top">
+              <span className="preview-avatar">AI</span>
+              <div><strong>FluentAI Tutor</strong><small>● Online</small></div>
+              <span className="preview-level">B1</span>
+            </div>
+            <div className="preview-message ai-message">Hi! What would you like to practise today?</div>
+            <div className="preview-message user-message">I want to improve my speaking skills.</div>
+            <div className="preview-feedback"><span>✓</span><div><strong>Great sentence!</strong><small>Natural and grammatically correct</small></div></div>
+            <div className="preview-input"><span>Type your answer...</span><b>→</b></div>
+          </div>
+          <div className="preview-score">
+            <span>92</span>
+            <div><strong>Excellent!</strong><small>Speaking score</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-modes">
+        {t.benefits.map((benefit, index) => (
+          <article key={benefit}>
+            <span>{index === 0 ? "◌" : index === 1 ? "▤" : "ϟ"}</span>
+            <div><strong>{benefit}</strong><small>{index === 0 ? "Real-life topics" : index === 1 ? "Smart review" : "Instant coaching"}</small></div>
+          </article>
+        ))}
+      </section>
+
+      {authOpen && (
+        <div className="auth-modal" role="dialog" aria-modal="true" aria-label={mode === "login" ? t.login : t.register} onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setAuthOpen(false);
+        }}>
+          <div className="auth-card landing-card auth-modal-card">
+            <button className="auth-modal-close" onClick={() => setAuthOpen(false)} aria-label="Close">×</button>
             <div className="auth-tabs">
               <button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>{t.login}</button>
               <button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>{t.register}</button>
@@ -176,16 +215,7 @@ export function AuthScreen({
             <div className="auth-security"><span>◆</span>{t.secure}</div>
           </div>
         </div>
-      </section>
-
-      <section className="landing-modes">
-        {t.benefits.map((benefit, index) => (
-          <article key={benefit}>
-            <span>{index === 0 ? "◌" : index === 1 ? "▤" : "ϟ"}</span>
-            <div><strong>{benefit}</strong><small>{index === 0 ? "Real-life topics" : index === 1 ? "Smart review" : "Instant coaching"}</small></div>
-          </article>
-        ))}
-      </section>
+      )}
     </main>
   );
 }
