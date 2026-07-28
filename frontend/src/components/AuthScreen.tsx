@@ -28,6 +28,15 @@ const copy = {
     formSubtitle: "Đăng nhập để tiếp tục lộ trình học tập cá nhân hóa.",
     formSubtitleRegister: "Tạo tài khoản và nhận lộ trình phù hợp với trình độ của bạn.",
     secure: "Thông tin của bạn được bảo vệ an toàn",
+    offer: "Bắt đầu hành trình tiếng Anh cùng gia sư AI cá nhân",
+    offerAction: "Tạo tài khoản miễn phí",
+    heroTitle: "Học tiếng Anh thú vị và hiệu quả cùng AI!",
+    heroBody: "FluentAI biến trí tuệ nhân tạo thành gia sư tiếng Anh cá nhân của bạn — luyện hội thoại, từ vựng và ngữ pháp theo đúng trình độ.",
+    startFree: "Bắt đầu miễn phí",
+    freeNote: "Không cần thẻ thanh toán",
+    trusted: "LỘ TRÌNH HỌC CÁ NHÂN HÓA",
+    levelText: "Tự động điều chỉnh theo trình độ A1–C2",
+    feedbackText: "Nhận phản hồi ngay sau mỗi câu trả lời",
   },
   en: {
     badge: "YOUR PERSONAL ENGLISH TUTOR",
@@ -50,6 +59,15 @@ const copy = {
     formSubtitle: "Sign in to continue your personalised learning path.",
     formSubtitleRegister: "Create an account and get a learning path matched to your level.",
     secure: "Your information is safely protected",
+    offer: "Start your English journey with a personal AI tutor",
+    offerAction: "Create a free account",
+    heroTitle: "Learn English in a fun and effective way with AI!",
+    heroBody: "FluentAI turns artificial intelligence into your personal English tutor — practise conversation, vocabulary and grammar at exactly the right level.",
+    startFree: "Start for free",
+    freeNote: "No payment card required",
+    trusted: "PERSONALISED LEARNING PATH",
+    levelText: "Automatically adapts from A1 to C2",
+    feedbackText: "Get feedback after every answer",
   },
 };
 
@@ -93,59 +111,80 @@ export function AuthScreen({
   }
 
   return (
-    <main className="auth-page">
-      <div className="auth-glow auth-glow-one" />
-      <div className="auth-glow auth-glow-two" />
-      <section className="auth-story">
-        <a className="auth-logo" href="#" aria-label="FluentAI home">
-          <span>F</span><span>Fluent<strong>AI</strong></span>
-        </a>
-        <div className="auth-story-copy">
-          <span className="kicker light">{t.badge}</span>
-          <h1>{t.title}</h1>
-          <p>{t.subtitle}</p>
-          <div className="auth-benefits">
-            {t.benefits.map((benefit, index) => (
-              <div key={benefit}><span>0{index + 1}</span><p>{benefit}</p></div>
-            ))}
+    <main className="landing-auth">
+      <div className="landing-offer">
+        <span>{t.offer}</span>
+        <button onClick={() => setMode("register")}>{t.offerAction} <b>→</b></button>
+      </div>
+
+      <header className="landing-header">
+        <div className="landing-nav">
+          <a className="landing-logo" href="#" aria-label="FluentAI home">
+            <span>F</span>Fluent<strong>AI</strong>
+          </a>
+          <div className="landing-actions">
+            <div className="language-switch landing-language" aria-label="Language">
+              <button className={language === "vi" ? "active" : ""} onClick={() => onLanguageChange("vi")}>VI</button>
+              <button className={language === "en" ? "active" : ""} onClick={() => onLanguageChange("en")}>EN</button>
+            </div>
+            <button className="nav-login" onClick={() => setMode("login")}>{t.login}</button>
+            <button className="nav-start" onClick={() => setMode("register")}>{t.startFree}</button>
+          </div>
+        </div>
+      </header>
+
+      <section className="landing-hero">
+        <div className="landing-copy">
+          <span className="landing-eyebrow">{t.trusted}</span>
+          <h1>{t.heroTitle}</h1>
+          <p>{t.heroBody}</p>
+          <div className="landing-cta">
+            <button onClick={() => setMode("register")}>{t.startFree} <span>→</span></button>
+            <small><i>✓</i>{t.freeNote}</small>
+          </div>
+          <div className="landing-benefits">
+            <div><span>A1</span><p>{t.levelText}</p></div>
+            <div><span>AI</span><p>{t.feedbackText}</p></div>
           </div>
         </div>
 
+        <div className="landing-auth-panel">
+          <div className="landing-orbit orbit-one" />
+          <div className="landing-orbit orbit-two" />
+          <div className="auth-card landing-card">
+            <div className="auth-tabs">
+              <button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>{t.login}</button>
+              <button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>{t.register}</button>
+            </div>
+            <div className="auth-heading">
+              <span className="auth-heading-mark">{mode === "login" ? "→" : "+"}</span>
+              <div>
+                <h2>{mode === "login" ? t.welcome : t.welcomeRegister}</h2>
+                <p>{mode === "login" ? t.formSubtitle : t.formSubtitleRegister}</p>
+              </div>
+            </div>
+            <form onSubmit={submit}>
+              {mode === "register" && (
+                <label>{t.name}<input required minLength={2} value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" /></label>
+              )}
+              <label>{t.email}<input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" /></label>
+              <label>{t.password}<input required minLength={mode === "register" ? 8 : 1} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /><small>{mode === "register" ? t.passwordHint : ""}</small></label>
+              {error && <p className="auth-error" role="alert">{error}</p>}
+              <button className="auth-submit" disabled={loading}>{loading ? "..." : mode === "login" ? t.submitLogin : t.submitRegister}</button>
+            </form>
+            <p className="auth-switch">{mode === "login" ? t.switchRegister : t.switchLogin} <button onClick={() => setMode(mode === "login" ? "register" : "login")}>{mode === "login" ? t.register : t.login}</button></p>
+            <div className="auth-security"><span>◆</span>{t.secure}</div>
+          </div>
+        </div>
       </section>
 
-      <section className="auth-form-side">
-        <div className="auth-side-top">
-          <span>FluentAI</span>
-          <div className="language-switch" aria-label="Language">
-            <button className={language === "vi" ? "active" : ""} onClick={() => onLanguageChange("vi")}>VI</button>
-            <button className={language === "en" ? "active" : ""} onClick={() => onLanguageChange("en")}>EN</button>
-          </div>
-        </div>
-        <div className="auth-card">
-          <div className="auth-tabs">
-            <button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>{t.login}</button>
-            <button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>{t.register}</button>
-          </div>
-          <div className="auth-heading">
-            <span className="auth-heading-mark">{mode === "login" ? "→" : "+"}</span>
-            <div>
-              <h2>{mode === "login" ? t.welcome : t.welcomeRegister}</h2>
-              <p>{mode === "login" ? t.formSubtitle : t.formSubtitleRegister}</p>
-            </div>
-          </div>
-          <form onSubmit={submit}>
-            {mode === "register" && (
-              <label>{t.name}<input required minLength={2} value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" /></label>
-            )}
-            <label>{t.email}<input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" /></label>
-            <label>{t.password}<input required minLength={mode === "register" ? 8 : 1} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /><small>{mode === "register" ? t.passwordHint : ""}</small></label>
-            {error && <p className="auth-error" role="alert">{error}</p>}
-            <button className="auth-submit" disabled={loading}>{loading ? "..." : mode === "login" ? t.submitLogin : t.submitRegister}</button>
-          </form>
-          <p className="auth-switch">{mode === "login" ? t.switchRegister : t.switchLogin} <button onClick={() => setMode(mode === "login" ? "register" : "login")}>{mode === "login" ? t.register : t.login}</button></p>
-          <div className="auth-security"><span>◆</span>{t.secure}</div>
-        </div>
-        <p className="auth-copyright">© 2026 FluentAI · Personalised English learning</p>
+      <section className="landing-modes">
+        {t.benefits.map((benefit, index) => (
+          <article key={benefit}>
+            <span>{index === 0 ? "◌" : index === 1 ? "▤" : "ϟ"}</span>
+            <div><strong>{benefit}</strong><small>{index === 0 ? "Real-life topics" : index === 1 ? "Smart review" : "Instant coaching"}</small></div>
+          </article>
+        ))}
       </section>
     </main>
   );
